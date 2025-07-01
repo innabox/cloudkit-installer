@@ -1,0 +1,31 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: aap-bootstrap
+  namespace: cloudkit
+spec:
+  template:
+    spec:
+      containers:
+        - image: cloudkit-aap-ee:latest
+          name: bootstrap
+          args:
+            - ansible-playbook
+            - "cloudkit.config_as_code.subscription"
+            - "cloudkit.config_as_code.configure"
+          envFrom:
+            - secretRef:
+                name: config-as-code-ig
+          env:
+            - name: AAP_USERNAME
+              value: admin
+            - name: AAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudkit-admin-password
+                  key: password
+      imagePullSecrets:
+        - name: quay-pull-secret
+      restartPolicy: Never
+  backoffLimit: 4

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: cloudkit-aap-base
+
+resources:
+  - aap_install.yaml
+  - aap.yaml
+  - cloudkit_env.yaml
+  - job.yaml
+  - image_secret.yaml
+
+# Common annotations with naming metadata
+commonAnnotations:
+  cloudkit.io/organization: cloudkit
+  cloudkit.io/project: aap
+

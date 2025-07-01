@@ -1,0 +1,17 @@
+apiVersion: aap.ansible.com/v1alpha1
+kind: AnsibleAutomationPlatform
+metadata:
+  name: cloudkit
+  namespace: cloudkit
+spec:
+  image_pull_policy: IfNotPresent
+  controller:
+    disabled: false
+    replicas: 2
+  eda:
+    disabled: false
+    replicas: 2
+  hub:
+    disabled: true
+  lightspeed:
+    disabled: true

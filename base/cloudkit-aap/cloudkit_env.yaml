@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloudkit-sa
+  namespace: cloudkit
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cloudkit-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: cloudkit-aap-cloudkit-sa
+    namespace: cloudkit
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: config-as-code-ig
+  namespace: cloudkit
+type: Opaque
+stringData:
+  vars.yaml: |
+    ---
+    aap_hostname: ...
+    aap_username: "{{ lookup('env', 'AAP_USERNAME') }}"
+    aap_password: "{{ lookup('env', 'AAP_PASSWORD') }}"
+    aap_organization_name: ...
+    aap_project_name: ...
+    aap_project_git_uri: ...
+    aap_project_git_branch: ...
+    aap_ee_image: ...
+    aap_validate_certs: ...
+    license_manifest_path: "{{ lookup('env', 'LICENSE_MANIFEST_PATH') }}"
+data:
+  license.zip: <copy here the output of `cat manifest.zip | base64 -w 0`>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cluster-fulfillment-ig
+  namespace: cloudkit
+type: Opaque
+stringData:
+  credentials: |
+    # Setup here the credentials required for cluster fulfillment playbooks (AWS, OpenStack, ...)
+

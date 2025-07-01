@@ -1,0 +1,28 @@
+# Ignore sensitive files
+*.secret
+*.key
+*.pem
+*.crt
+
+# Ignore temporary kustomize builds
+kustomization-build/
+dist/
+
+# Ignore editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore backup files
+*.bak
+*.backup
+
+# Ignore local development overrides
+local/
+*.local.yaml
