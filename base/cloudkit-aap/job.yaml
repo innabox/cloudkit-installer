@@ -69,7 +69,7 @@ spec:
         - cloudkit.config_as_code.configure
         envFrom:
         - secretRef:
-            name: cloudkit-config-as-code-ig
+            name: config-as-code-ig
 
         env:
         - name: AAP_USERNAME
@@ -107,7 +107,7 @@ spec:
       volumes:
       - name: config-as-code-manifest-volume
         secret:
-          secretName: dev-cloudkit-config-as-code-manifest-ig
+          secretName: config-as-code-manifest-ig
       imagePullSecrets:
       - name: quay-pull-secret
       restartPolicy: Never

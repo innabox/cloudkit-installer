@@ -20,13 +20,13 @@ resources:
   
 # Configuration generators
 secretGenerator:
-- name: cloudkit-config-as-code-ig
+- name: config-as-code-ig
   literals:
   - AAP_HOSTNAME=https://dev-cloudkit-foobar.apps.hypershift1.nerc.mghpcc.org
   - AAP_VALIDATE_CERTS=false
   - AAP_ORGANIZATION_NAME=dev
   - AAP_PROJECT_NAME=cloudkit
-  - AAP_PREFIX=dev-foobar
+  - AAP_PREFIX=dev
   - AAP_PROJECT_GIT_URI=https://github.com/innabox/cloudkit-aap
   - AAP_PROJECT_GIT_BRANCH=main
   - AAP_EE_IMAGE=quay.io/rh-ee-jkary/cloudkit-aap-ee:latest
@@ -36,7 +36,7 @@ secretGenerator:
   - CLOUDKIT_FULFILLMENT_SERVICE_URI=https://dev-fulfillment-api-foobar.apps.hypershift1.nerc.mghpcc.org
   options:
     disableNameSuffixHash: true
-- name: foobar-config-as-code-manifest-ig
+- name: config-as-code-manifest-ig
   files:
   - license.zip=License.zip
   options:
@@ -47,7 +47,10 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/containers/0/envFrom/0/secretRef/name
-      value: dev-cloudkit-config-as-code-ig
+      value: dev-config-as-code-ig
+    - op: replace
+      path: /spec/containers/0/volumes/0/secret/secretName
+      value: dev-config-as-code-manifest-ig
   target:
     kind: Job
     name: dev-app-bootstrap
@@ -67,4 +70,4 @@ patches:
       value: dev-cloudkit-controller-foobar.apps.hypershift1.nerc.mghpcc.org
   target:
     kind: Job
-    name: aap-bootstrap
+    name: dev-aap-bootstrap
