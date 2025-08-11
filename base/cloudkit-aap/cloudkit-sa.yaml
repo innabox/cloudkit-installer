@@ -1,4 +1,3 @@
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -16,12 +15,3 @@ subjects:
   - kind: ServiceAccount
     name: cloudkit-sa
     namespace: default
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cluster-fulfillment-ig
-type: Opaque
-stringData:
-  credentials: |
-    # Setup here the credentials required for cluster fulfillment playbooks (AWS, OpenStack, ...)

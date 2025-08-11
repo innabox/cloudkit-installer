@@ -5,7 +5,7 @@ metadata:
   name: cloudkit-aap-base
 
 resources:
-  - cloudkit_env.yaml
+  - cloudkit-sa.yaml
   - job.yaml
 
 # Common annotations with naming metadata
