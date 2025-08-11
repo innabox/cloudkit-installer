@@ -5,6 +5,7 @@ metadata:
   name: cloudkit-aap-base
 
 resources:
+  - aap.yaml
   - cloudkit-sa.yaml
   - job.yaml
 
