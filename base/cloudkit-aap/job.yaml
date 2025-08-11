@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: aap-bootstrap
-  namespace: cloudkit
 spec:
   template:
     spec:
