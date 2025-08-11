@@ -58,3 +58,10 @@ patches:
   target:
     kind: Role
     name: create-controller-token
+- patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: "dev-template-publisher"
+  target:
+    kind: RoleBinding
+    name: aap-fulfillment-template-publisher-binding
