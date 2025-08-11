@@ -58,7 +58,7 @@ spec:
         - name: AAP_CONTROLLER_GATEWAY_URL
           value: "dev-cloudkit-controller-foobar.apps.hypershift1.nerc.mghpcc.org"
       containers:
-      - image: ghcr.io/innabox/cloudkit-aap-ee:latest
+      - image: cloudkit-aap-ee
         name: bootstrap
         args:
         - ansible-playbook

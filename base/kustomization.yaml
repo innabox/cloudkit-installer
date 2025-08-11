@@ -20,3 +20,14 @@ labels:
   - includeSelectors: true
     pairs:
       app.kubernetes.io/part-of: cloudkit
+
+images:
+  - name: fulfillment-service
+    newName: ghcr.io/innabox/fulfillment-service
+    newTag: latest
+  - name: cloudkit-aap-ee
+    newName: ghcr.io/innabox/cloudkit-aap-ee
+    newTag: latest
+  - name: cloudkit-operator
+    newName: ghcr.io/innabox/cloudkit-operator
+    newTag: latest
