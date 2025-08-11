@@ -6,7 +6,6 @@ metadata:
 
 resources:
 - namespace.yaml
-- template-publisher.yaml
 
 # Common annotations for all CloudKit components
 commonAnnotations:
