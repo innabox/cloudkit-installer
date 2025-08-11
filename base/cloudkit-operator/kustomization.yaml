@@ -4,16 +4,6 @@ kind: Kustomization
 metadata:
   name: cloudkit-operator-base
 
-resources:
-- rbac.yaml
-- manager.yaml
-- crd.yaml
-- clusterorder-crd.yaml
-- manager-config.yaml
-- feature-gates.yaml
-- logging-config.yaml
-- webhook-config.yaml
-
 # Common annotations with naming metadata
 commonAnnotations:
   cloudkit.io/organization: cloudkit
@@ -27,8 +17,9 @@ labels:
     app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/part-of: cloudkit
 
-
-images:
-- name: quay.io/innabox/cloudkit-operator
-  newName: ghcr.io/innabox/cloudkit-operator
-  newTag: latest
+resources:
+- crd.yaml
+- deployment.yaml
+- metrics-service.yaml
+- rbac.yaml
+- serviceaccount.yaml

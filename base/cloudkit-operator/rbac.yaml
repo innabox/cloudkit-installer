@@ -1,182 +1,245 @@
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app.kubernetes.io/name: cloudkit-operator
-    app.kubernetes.io/managed-by: kustomize
-  name: controller-manager
-  namespace: cloudkit
----
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/managed-by: kustomize
-  name: leader-election-role
-  namespace: cloudkit
+    app.kubernetes.io/name: cloudkit-operator
+  name: cloudkit-operator-clusterorder-editor-role
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - coordination.k8s.io
-  resources:
-  - leases
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders/status
+    verbs:
+      - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/managed-by: kustomize
-  name: manager-role
+    app.kubernetes.io/name: cloudkit-operator
+  name: cloudkit-operator-clusterorder-viewer-role
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  - secrets
-  - services
-  - serviceaccounts
-  - namespaces
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  - replicasets
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - cloudkit.io
-  resources:
-  - '*'
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - cloudkit.openshift.io
-  resources:
-  - '*'
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - batch
-  resources:
-  - jobs
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - rolebindings
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - hypershift.openshift.io
-  resources:
-  - hostedclusters
-  - nodepools
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders/status
+    verbs:
+      - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/managed-by: kustomize
-  name: leader-election-rolebinding
-  namespace: cloudkit
+    app.kubernetes.io/name: cloudkit-operator
+  name: cloudkit-operator-leader-election-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: leader-election-role
+  name: cloudkit-operator-leader-election-role
 subjects:
-- kind: ServiceAccount
-  name: controller-manager
-  namespace: cloudkit
+  - kind: ServiceAccount
+    name: cloudkit-operator-controller-manager
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cloudkit-operator
+  name: cloudkit-operator-leader-election-role
+  namespace: default
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ''
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/managed-by: kustomize
-  name: manager-rolebinding
+    app.kubernetes.io/name: cloudkit-operator
+  name: cloudkit-operator-manager-admin-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: manager-role
+  name: admin
 subjects:
-- kind: ServiceAccount
-  name: controller-manager
-  namespace: cloudkit
+  - kind: ServiceAccount
+    name: cloudkit-operator-controller-manager
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cloudkit-operator
+  name: cloudkit-operator-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cloudkit-operator-manager-role
+subjects:
+  - kind: ServiceAccount
+    name: cloudkit-operator-controller-manager
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cloudkit-operator-manager-role
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - namespaces
+      - serviceaccounts
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - hypershift.openshift.io
+    resources:
+      - hostedclusters
+      - nodepools
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - rolebindings
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cloudkit-operator-metrics-auth-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cloudkit-operator-metrics-auth-role
+subjects:
+  - kind: ServiceAccount
+    name: cloudkit-operator-controller-manager
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cloudkit-operator-metrics-auth-role
+rules:
+  - apiGroups:
+      - authentication.k8s.io
+    resources:
+      - tokenreviews
+    verbs:
+      - create
+  - apiGroups:
+      - authorization.k8s.io
+    resources:
+      - subjectaccessreviews
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cloudkit-operator-metrics-reader
+rules:
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
