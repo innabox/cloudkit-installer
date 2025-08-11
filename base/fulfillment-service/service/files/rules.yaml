@@ -18,7 +18,7 @@
 - name: Allow specific methods to client
   action: allow
   condition: |
-    subject.name == 'system:serviceaccount:${NAMESPACE}:client' &&
+    subject.name == 'system:serviceaccount:${NAMESPACE}:fulfillment-client' &&
     method in [
       '/events.v1/Watch',
       '/fulfillment.v1.ClusterTemplates/Get',
@@ -37,8 +37,7 @@
   action: allow
   condition: |
     subject.name in [
-      'system:serviceaccount:${NAMESPACE}:admin',
-      'system:serviceaccount:${NAMESPACE}:controller',
-      'system:serviceaccount:${NAMESPACE}:controller-manager',
+      'system:serviceaccount:${NAMESPACE}:cloudkit-operator-controller-manager',
+      'system:serviceaccount:${NAMESPACE}:fulfillment-admin',
       'system:serviceaccount:${NAMESPACE}:fulfillment-controller',
     ]
