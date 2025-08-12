@@ -26,12 +26,6 @@ resources:
   - admin
   - controller
 
-# Common annotations with naming metadata
-commonAnnotations:
-  cloudkit.io/organization: cloudkit
-  cloudkit.io/project: fulfillment-service
-
-
 generatorOptions:
   disableNameSuffixHash: true
 
@@ -42,3 +36,7 @@ images:
 - name: postgres
   newName: quay.io/sclorg/postgresql-15-c9s
   newTag: latest
+
+labels:
+- pairs:
+    cloudkit.io/project: fulfillment-service

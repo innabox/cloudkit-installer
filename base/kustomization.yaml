@@ -11,10 +11,6 @@ resources:
   - cloudkit-operator
   - fulfillment-service
 
-# Common annotations for all CloudKit components
-commonAnnotations:
-  cloudkit.io/organization: cloudkit
-
 # Common labels for all CloudKit components
 labels:
   - includeSelectors: true

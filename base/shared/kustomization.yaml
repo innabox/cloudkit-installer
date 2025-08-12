@@ -7,13 +7,11 @@ metadata:
 resources:
 - namespace.yaml
 
-# Common annotations for all CloudKit components
-commonAnnotations:
-  cloudkit.io/organization: cloudkit
-  cloudkit.io/project: shared
 
 # Common labels for all CloudKit components
 labels:
 - includeSelectors: true
   pairs:
     app.kubernetes.io/part-of: cloudkit
+- pairs:
+    cloudkit.io/project: shared

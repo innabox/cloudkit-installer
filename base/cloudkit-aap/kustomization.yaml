@@ -9,7 +9,6 @@ resources:
   - cloudkit-sa.yaml
   - job.yaml
 
-# Common annotations with naming metadata
-commonAnnotations:
-  cloudkit.io/organization: cloudkit
-  cloudkit.io/project: aap
+labels:
+- pairs:
+    cloudkit.io/project: cloudkit-aap

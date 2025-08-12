@@ -4,11 +4,6 @@ kind: Kustomization
 metadata:
   name: cloudkit-operator-base
 
-# Common annotations with naming metadata
-commonAnnotations:
-  cloudkit.io/organization: cloudkit
-  cloudkit.io/project: operator
-
 # Common labels
 labels:
 - includeSelectors: true
@@ -16,6 +11,8 @@ labels:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/part-of: cloudkit
+- pairs:
+    cloudkit.io/project: cloudkit-operator
 
 resources:
 - crd.yaml
