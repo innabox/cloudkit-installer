@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: cloudkit-operator
     control-plane: controller-manager
-  name: cloudkit-operator-controller-manager
+  name: cloudkit-controller
 spec:
   replicas: 1
   selector:
@@ -70,5 +70,5 @@ spec:
                 - ALL
       securityContext:
         runAsNonRoot: true
-      serviceAccountName: cloudkit-operator-controller-manager
+      serviceAccountName: cloudkit-controller
       terminationGracePeriodSeconds: 10
