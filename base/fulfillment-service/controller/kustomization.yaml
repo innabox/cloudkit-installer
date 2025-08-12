@@ -3,7 +3,7 @@ kind: Kustomization
 labels:
 - includeSelectors: true
   pairs:
-    component: service
+    component: controller
 
 resources:
 - sa.yaml
