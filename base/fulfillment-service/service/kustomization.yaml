@@ -9,6 +9,7 @@ resources:
 - certificate.yaml
 - deployment.yaml
 - service.yaml
+- route.yaml
 
 configMapGenerator:
 - files:
