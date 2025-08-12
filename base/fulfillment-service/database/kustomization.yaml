@@ -6,6 +6,8 @@ labels:
     component: database
 
 resources:
+- sa.yaml
+- rbac.yaml
 - pvc.yaml
 - service.yaml
 - statefulset.yaml

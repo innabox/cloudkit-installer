@@ -19,6 +19,7 @@ spec:
   replicas: 1
   template:
     spec:
+      serviceAccountName: fulfillment-database
       volumes:
       - name: server-cert
         secret:
@@ -33,6 +34,19 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: fulfillment-database
+      initContainers:
+      - name: password-generator
+        image: openshift-cli
+        command:
+        - /bin/bash
+        - -c
+        - |
+          if ! oc get secret fulfillment-database-password > /dev/null 2>&1; then
+              echo "generating postgresql password"
+              password=$(openssl rand -hex 20)
+              oc create secret generic fulfillment-database-password \
+                --from-literal POSTGRES_PASSWORD="$password"
+          fi
       containers:
       - name: server
         image: postgres
@@ -41,7 +55,10 @@ spec:
         - name: POSTGRESQL_USER
           value: client
         - name: POSTGRESQL_PASSWORD
-          value: ''
+          valueFrom:
+            secretKeyRef:
+              name: fulfillment-database-password
+              key: POSTGRES_PASSWORD
         - name: POSTGRESQL_DATABASE
           value: service
         volumeMounts:

@@ -58,6 +58,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: fulfillment-database-password
+                key: POSTGRES_PASSWORD
         command:
         - /usr/local/bin/fulfillment-service
         - start
@@ -65,7 +70,7 @@ spec:
         - --log-level=debug
         - --log-headers=true
         - --log-bodies=true
-        - "--db-url=postgres://client@fulfillment-database:5432/service?\
+        - "--db-url=postgres://client:$(PGPASSWORD)@fulfillment-database:5432/service?\
           sslmode=verify-full&\
           sslcert=/secrets/cert/tls.crt&\
           sslkey=/secrets/cert/tls.key&\
