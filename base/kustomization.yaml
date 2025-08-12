@@ -18,11 +18,17 @@ labels:
       app.kubernetes.io/part-of: cloudkit
 
 images:
+- name: gomplate
+  newName: docker.io/gomplate/gomplate
+  newTag: latest
+- name: postgres
+  newName: quay.io/sclorg/postgresql-15-c9s
+  newTag: latest
 - name: fulfillment-service
   newName: ghcr.io/innabox/fulfillment-service
   newTag: latest
-- name: cloudkit-aap-ee
-  newName: ghcr.io/innabox/cloudkit-aap-ee
+- name: cloudkit-aap
+  newName: ghcr.io/innabox/cloudkit-aap
   newTag: latest
 - name: cloudkit-operator
   newName: ghcr.io/innabox/cloudkit-operator
@@ -30,6 +36,9 @@ images:
 - name: envoy
   newName: docker.io/envoyproxy/envoy
   newTag: v1.33.0
+- name: openshift-cli
+  newName: image-registry.openshift-image-registry.svc:5000/openshift/cli
+  newTag: latest
 
 configurations:
 - nameReference.yaml
