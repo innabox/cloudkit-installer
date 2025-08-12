@@ -31,10 +31,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          envFrom:
-            - secretRef:
-                name: cloudkit-config
-                optional: true
+            - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
+              value: http://innabox-aap-eda-api/create-hosted-cluster
+            - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
+              value: http://innabox-aap-eda-api/delete-hosted-cluster
+            - name: CLOUDKIT_FULFILLMENT_SERVER_ADDRESS
+              value: fulfillment-api:8000
+            - name: CLOUDKIT_FULFILLMENT_TOKEN_FILE
+              value: /var/run/secrets/kubernetes.io/serviceaccount/token
+            - name: CLOUDKIT_MINIUM_REFRESH_INTERVAL
+              value: "30s"
           image: cloudkit-operator
           imagePullPolicy: Always
           livenessProbe:
