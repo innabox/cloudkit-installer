@@ -7,28 +7,27 @@ spec:
     spec:
       initContainers:
       - name: wait-for-aap
-        image: registry.redhat.io/ubi8/ubi-minimal:latest
+        image: openshift-cli
         command:
-          - /bin/sh
+          - /bin/bash
           - -c
           - |
-            echo "Gateway: ${AAP_GATEWAY_URL}"
+            echo "Gateway: ${AAP_GATEWAY_HOSTNAME}"
             echo "Waiting for AAP controller to be ready..."
-            microdnf install -y curl
-            for i in $(seq 1 30); do
-              echo "Attempt $i/30: Checking AAP controller readiness..."
-              curl -skf https://${AAP_GATEWAY_URL}/api/gateway/v1/ping/ \
+            for i in {1..60}; do
+              echo "Attempt $i: Checking AAP controller readiness..."
+              curl -skf http://${AAP_GATEWAY_HOSTNAME}/api/gateway/v1/ping/ \
                 | grep -q 'good';
               GATEWAY=$?
               echo "GATEWAY exit code: $GATEWAY"
 
               curl -skf \
                 -u "${AAP_EDA_ADMIN}:${AAP_EDA_PASSWORD}" \
-                https://${AAP_EDA_URL}/api/eda/v1/status/ | grep -qi 'good';
+              http://${AAP_EDA_HOSTNAME}:8000/api/eda/v1/status/ | grep -qi 'good';
               EDA_GATEWAY=$?
               echo "EDA_GATEWAY exit code: $EDA_GATEWAY"
 
-              curl -skf https://${AAP_CONTROLLER_GATEWAY_URL}/api/v2/ping/ \
+              curl -skf http://${AAP_CONTROLLER_GATEWAY_HOSTNAME}/api/v2/ping/ \
                 | grep -q 'version';
               CONTROLLER_GATEWAY=$?
               echo "CONTROLLER_GATEWAY exit code: $CONTROLLER_GATEWAY"
@@ -38,27 +37,27 @@ spec:
                 echo "AAP controller is ready!"
                 exit 0
               fi
-              echo "AAP is not ready, waiting 600 seconds..."
-              sleep 600
+              echo "AAP is not ready, waiting 60 seconds..."
+              sleep 60
             done
             echo "Timeout waiting for AAP."
             exit 1
         env:
-        - name: AAP_GATEWAY_URL
-          value: "dev-cloudkit-foobar.apps.hypershift1.nerc.mghpcc.org"
-        - name: AAP_EDA_URL
-          value: "dev-cloudkit-eda-foobar.apps.hypershift1.nerc.mghpcc.org"
+        - name: AAP_GATEWAY_HOSTNAME
+          value: "innabox-aap"
+        - name: AAP_EDA_HOSTNAME
+          value: "innabox-aap-eda-api"
         - name: AAP_EDA_ADMIN
           value: "admin"
         - name: AAP_EDA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: dev-cloudkit-eda-admin-password
+              name: innabox-aap-eda-admin-password
               key: password
-        - name: AAP_CONTROLLER_GATEWAY_URL
-          value: "dev-cloudkit-controller-foobar.apps.hypershift1.nerc.mghpcc.org"
+        - name: AAP_CONTROLLER_GATEWAY_HOSTNAME
+          value: "innabox-aap-controller-service"
       containers:
-      - image: cloudkit-aap-ee
+      - image: cloudkit-aap
         name: bootstrap
         args:
         - ansible-playbook
@@ -69,36 +68,13 @@ spec:
         envFrom:
         - secretRef:
             name: config-as-code-ig
-
+            optional: true
         env:
-        - name: AAP_USERNAME
-          value: admin
         - name: AAP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: dev-cloudkit-admin-password
+              name: innabox-aap-admin-password
               key: password
-        - name: AAP_EDA_USERNAME
-          value: admin
-        - name: AAP_EDA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: dev-cloudkit-eda-admin-password
-              key: password
-        # Override timeout configuration for large repository sync
-        - name: aap_configuration_async_timeout
-          value: "3600"
-        - name: controller_configuration_projects_async_retries
-          value: "60"
-        - name: controller_configuration_projects_async_delay
-          value: "10"
-        # Enable detailed logging
-        - name: ANSIBLE_DEBUG
-          value: "True"
-        - name: ANSIBLE_VERBOSITY
-          value: "3"
-        - name: ANSIBLE_LOG_PATH
-          value: "/tmp/ansible.log"
         volumeMounts:
         - name: config-as-code-manifest-volume
           mountPath: /var/secrets/config-as-code-manifest
@@ -107,7 +83,5 @@ spec:
       - name: config-as-code-manifest-volume
         secret:
           secretName: config-as-code-manifest-ig
-      imagePullSecrets:
-      - name: quay-pull-secret
       restartPolicy: Never
   backoffLimit: 4
