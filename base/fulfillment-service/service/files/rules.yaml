@@ -23,10 +23,13 @@
       '/events.v1/Watch',
       '/fulfillment.v1.ClusterTemplates/Get',
       '/fulfillment.v1.ClusterTemplates/List',
+      '/fulfillment.v1.Clusters/Create',
       '/fulfillment.v1.Clusters/Delete',
       '/fulfillment.v1.Clusters/Get',
       '/fulfillment.v1.Clusters/GetKubeconfig',
       '/fulfillment.v1.Clusters/GetKubeconfigViaHttp',
+      '/fulfillment.v1.Clusters/GetPassword',
+      '/fulfillment.v1.Clusters/GetPasswordViaHttp',
       '/fulfillment.v1.Clusters/List',
       '/fulfillment.v1.Clusters/Update',
       '/fulfillment.v1.HostClasses/Get',
@@ -37,7 +40,7 @@
   action: allow
   condition: |
     subject.name in [
-      'system:serviceaccount:${NAMESPACE}:cloudkit-operator-controller-manager',
       'system:serviceaccount:${NAMESPACE}:fulfillment-admin',
       'system:serviceaccount:${NAMESPACE}:fulfillment-controller',
+      'system:serviceaccount:${NAMESPACE}:cloudkit-operator-controller-manager',
     ]

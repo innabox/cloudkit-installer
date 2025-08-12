@@ -17,13 +17,7 @@ metadata:
   name: fulfillment-database
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: fulfillment-database
   template:
-    metadata:
-      labels:
-        app: fulfillment-database
     spec:
       volumes:
       - name: server-cert
@@ -47,12 +41,12 @@ spec:
         - name: POSTGRESQL_USER
           value: client
         - name: POSTGRESQL_PASSWORD
-          value: 'password'
+          value: ''
         - name: POSTGRESQL_DATABASE
           value: service
         volumeMounts:
         - name: data
-          mountPath: /var/lib/pgsql/data
+          mountPath: /var/lib/postgresql
         - name: server-cert
           mountPath: /secrets/cert
         - name: server-config

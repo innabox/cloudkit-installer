@@ -18,12 +18,18 @@ labels:
       app.kubernetes.io/part-of: cloudkit
 
 images:
-  - name: fulfillment-service
-    newName: ghcr.io/innabox/fulfillment-service
-    newTag: latest
-  - name: cloudkit-aap-ee
-    newName: ghcr.io/innabox/cloudkit-aap-ee
-    newTag: latest
-  - name: cloudkit-operator
-    newName: ghcr.io/innabox/cloudkit-operator
-    newTag: latest
+- name: fulfillment-service
+  newName: ghcr.io/innabox/fulfillment-service
+  newTag: latest
+- name: cloudkit-aap-ee
+  newName: ghcr.io/innabox/cloudkit-aap-ee
+  newTag: latest
+- name: cloudkit-operator
+  newName: ghcr.io/innabox/cloudkit-operator
+  newTag: latest
+- name: envoy
+  newName: docker.io/envoyproxy/envoy
+  newTag: v1.33.0
+
+configurations:
+- nameReference.yaml

@@ -13,30 +13,20 @@
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+labels:
+- includeSelectors: true
+  pairs:
+    app: fulfillment-service
+- pairs:
+    cloudkit.io/project: fulfillment-service
 
-metadata:
-  name: fulfillment-service-base
-
-# Resources for fulfillment service (uses shared namespace)
 resources:
-  - ca
-  - database
-  - service
-  - client
-  - admin
-  - controller
+- ca
+- database
+- service
+- client
+- admin
+- controller
 
 generatorOptions:
   disableNameSuffixHash: true
-
-images:
-- name: envoy
-  newName: docker.io/envoyproxy/envoy
-  newTag: v1.33.0
-- name: postgres
-  newName: quay.io/sclorg/postgresql-15-c9s
-  newTag: latest
-
-labels:
-- pairs:
-    cloudkit.io/project: fulfillment-service

@@ -11,15 +11,9 @@ resources:
 - service.yaml
 
 configMapGenerator:
-- name: fulfillment-service-config
-  files:
+- files:
   - files/rules.yaml
-
-- name: fulfillment-service-envoy
-  files:
+  name: fulfillment-service-config
+- files:
   - files/envoy.yaml
-
-- name: fulfillment-service-scripts
-  files:
-  - files/start-server.sh
-  - files/test-server.sh
+  name: fulfillment-service-envoy
