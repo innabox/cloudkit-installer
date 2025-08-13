@@ -11,4 +11,4 @@ resources:
 
 labels:
 - pairs:
-    cloudkit.io/project: cloudkit-aap
+    cloudkit.openshift.io/project: cloudkit-aap

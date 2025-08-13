@@ -14,4 +14,4 @@ labels:
   pairs:
     app.kubernetes.io/part-of: cloudkit
 - pairs:
-    cloudkit.io/project: shared
+    cloudkit.openshift.io/project: shared

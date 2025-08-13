@@ -12,7 +12,7 @@ labels:
     app.kubernetes.io/name: cloudkit-operator
     app.kubernetes.io/part-of: cloudkit
 - pairs:
-    cloudkit.io/project: cloudkit-operator
+    cloudkit.openshift.io/project: cloudkit-operator
 
 resources:
 - crd.yaml

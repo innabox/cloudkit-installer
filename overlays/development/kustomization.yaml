@@ -34,6 +34,6 @@ secretGenerator:
 - name: config-as-code-manifest-ig
   options:
     labels:
-      cloudkit.io/project: cloudkit-aap
+      cloudkit.openshift.io/project: cloudkit-aap
   files:
   - license.zip=files/license.zip

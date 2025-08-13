@@ -18,7 +18,7 @@ labels:
   pairs:
     app: fulfillment-service
 - pairs:
-    cloudkit.io/project: fulfillment-service
+    cloudkit.openshift.io/project: fulfillment-service
 
 resources:
 - ca
