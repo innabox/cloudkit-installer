@@ -8,6 +8,7 @@ resources:
   - aap.yaml
   - cloudkit-sa.yaml
   - job.yaml
+  - template-publisher.yaml
 
 labels:
 - pairs:
