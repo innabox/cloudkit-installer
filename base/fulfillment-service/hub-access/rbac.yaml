@@ -1,0 +1,36 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: hub-access
+rules:
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - clusterorders/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: hub-access
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: hub-access
+subjects:
+  - kind: ServiceAccount
+    name: hub-access
+    namespace: default

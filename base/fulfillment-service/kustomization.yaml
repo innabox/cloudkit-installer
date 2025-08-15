@@ -27,6 +27,7 @@ resources:
 - client
 - admin
 - controller
+- hub-access
 
 generatorOptions:
   disableNameSuffixHash: true
