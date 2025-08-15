@@ -44,3 +44,14 @@
       'system:serviceaccount:{{ .Env.NAMESPACE }}:fulfillment-controller',
       'system:serviceaccount:{{ .Env.NAMESPACE }}:cloudkit-operator-controller-manager',
     ]
+
+- name: Allow template publisher to create templates
+  action: allow
+  condition: |
+    subject.name == 'system:serviceaccount:{{ .Env.NAMESPACE }}:template-publisher' &&
+    method in [
+      '/fulfillment.v1.ClusterTemplates/Get',
+      '/fulfillment.v1.ClusterTemplates/List',
+      '/fulfillment.v1.ClusterTemplates/Create',
+      '/fulfillment.v1.ClusterTemplates/Update',
+    ]
