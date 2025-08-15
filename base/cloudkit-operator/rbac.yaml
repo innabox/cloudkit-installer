@@ -61,7 +61,7 @@ roleRef:
   name: cloudkit-operator-leader-election-role
 subjects:
   - kind: ServiceAccount
-    name: cloudkit-controller
+    name: cloudkit-operator-controller-manager
     namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -118,7 +118,7 @@ roleRef:
   name: admin
 subjects:
   - kind: ServiceAccount
-    name: cloudkit-controller
+    name: cloudkit-operator-controller-manager
     namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -134,13 +134,13 @@ roleRef:
   name: cloudkit-operator-manager-role
 subjects:
   - kind: ServiceAccount
-    name: cloudkit-controller
+    name: cloudkit-operator-controller-manager
     namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: cloudkit-controller
+  name: cloudkit-operator-manager-role
 rules:
   - apiGroups:
       - ''
@@ -213,7 +213,7 @@ roleRef:
   name: cloudkit-operator-metrics-auth-role
 subjects:
   - kind: ServiceAccount
-    name: cloudkit-controller
+    name: cloudkit-operator-controller-manager
     namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1

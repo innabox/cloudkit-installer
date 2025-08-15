@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: cloudkit-operator
     control-plane: controller-manager
-  name: cloudkit-controller-metrics-service
+  name: cloudkit-operator-controller-manager-metrics-service
 spec:
   ports:
     - name: https

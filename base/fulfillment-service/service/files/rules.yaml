@@ -42,5 +42,5 @@
     subject.name in [
       'system:serviceaccount:{{ .Env.NAMESPACE }}:fulfillment-admin',
       'system:serviceaccount:{{ .Env.NAMESPACE }}:fulfillment-controller',
-      'system:serviceaccount:{{ .Env.NAMESPACE }}:cloudkit-controller',
+      'system:serviceaccount:{{ .Env.NAMESPACE }}:cloudkit-operator-controller-manager',
     ]
