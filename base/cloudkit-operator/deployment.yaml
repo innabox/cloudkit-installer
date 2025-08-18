@@ -39,7 +39,7 @@ spec:
               value: fulfillment-api:8000
             - name: CLOUDKIT_FULFILLMENT_TOKEN_FILE
               value: /var/run/secrets/kubernetes.io/serviceaccount/token
-            - name: CLOUDKIT_MINIMUM_REFRESH_INTERVAL
+            - name: CLOUDKIT_MINIMUM_REQUEST_INTERVAL
               value: "30s"
           image: cloudkit-operator
           imagePullPolicy: Always
