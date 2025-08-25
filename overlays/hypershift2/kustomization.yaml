@@ -20,6 +20,6 @@ patches:
           - name: manager
             env:
             - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
-              value: http://innabox-innabox-eda-service:8000/create-hosted-cluster
+              value: http://innabox-innabox-eda-service:5000/create-hosted-cluster
             - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
-              value: http://innabox-innabox-eda-service:8000/delete-hosted-cluster
+              value: http://innabox-innabox-eda-service:5000/delete-hosted-cluster

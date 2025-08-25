@@ -4,3 +4,4 @@ resources:
 - cluster-fulfillment-ig.yaml
 - config-as-code-manifest-ig.yaml
 - quay-pull-secret.yaml
+- default-cluster-credentials.yaml
