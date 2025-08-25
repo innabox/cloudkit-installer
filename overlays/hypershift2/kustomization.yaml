@@ -6,3 +6,20 @@ namespace: innabox
 resources:
 - ../../base
 - externalsecrets
+
+patches:
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: cloudkit-operator-controller-manager
+    spec:
+      template:
+        spec:
+          containers:
+          - name: manager
+            env:
+            - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
+              value: http://innabox-innabox-eda-service:8000/create-hosted-cluster
+            - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
+              value: http://innabox-innabox-eda-service:8000/delete-hosted-cluster
