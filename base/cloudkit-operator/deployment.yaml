@@ -40,7 +40,7 @@ spec:
             - name: CLOUDKIT_FULFILLMENT_TOKEN_FILE
               value: /var/run/secrets/kubernetes.io/serviceaccount/token
             - name: CLOUDKIT_MINIMUM_REQUEST_INTERVAL
-              value: "30s"
+              value: "10m"
           image: cloudkit-operator
           imagePullPolicy: Always
           livenessProbe:
