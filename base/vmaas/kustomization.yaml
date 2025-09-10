@@ -5,10 +5,10 @@ metadata:
   name: vmaas
 
 resources:
+  - cloudkit.openshift.io_cloudkitvms.yaml
   - udn.yaml
   - nfs-subdir-provisioner.yaml
 
 labels:
 - pairs:
     cloudkit.openshift.io/project: cloudkit-vmaas
-

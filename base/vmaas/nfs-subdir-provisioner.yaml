@@ -94,4 +94,3 @@ volumes:
 - persistentVolumeClaim
 - projected
 - secret
-

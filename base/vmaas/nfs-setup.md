@@ -58,7 +58,7 @@ Apply the Kubernetes manifests in this order:
 - **odf-nfs-vm-storage**: ODF-managed NFS storage class
 
 Both storage classes support:
-- **Access Mode**: ReadWriteMany (required for live migration)  
+- **Access Mode**: ReadWriteMany (required for live migration)
 - **Reclaim Policy**: Retain (data persists after PVC deletion)
 - **Volume Binding**: WaitForFirstConsumer
 - **NFS Version**: 4.1 with optimized mount options
@@ -117,7 +117,7 @@ spec:
 
 ### Common Issues
 1. **NFS Mount Failures**: Check network connectivity between cluster nodes and NFS server
-2. **Permission Errors**: Verify NFS exports and directory permissions  
+2. **Permission Errors**: Verify NFS exports and directory permissions
 3. **ODF Installation**: Check operator logs in openshift-storage namespace
 4. **PV Binding**: Ensure PV paths exist on NFS server before creating PVCs
 
