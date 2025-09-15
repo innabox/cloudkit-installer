@@ -30,16 +30,16 @@ spec:
       - name: service-tls
         secret:
           secretName: fulfillment-service-tls
-      - name: kube-root-ca
-        configMap:
-          name: kube-root-ca.crt
+      - name: ca-cert
+        secret:
+          secretName: ca-key
       containers:
       - name: controller
         image: fulfillment-service
         imagePullPolicy: IfNotPresent
         volumeMounts:
-        - name: kube-root-ca
-          mountPath: /usr/local/share/ca-certificates/
+        - name: ca-cert
+          mountPath: /usr/local/share/ca-certificates/ca.crt
           subPath: ca.crt
         env:
         - name: KUBERNETES_CLIENT_INSECURE_SKIP_TLS_VERIFY
