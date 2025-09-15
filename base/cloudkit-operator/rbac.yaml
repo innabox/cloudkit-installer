@@ -10,6 +10,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders
+      - virtualmachines
     verbs:
       - create
       - delete
@@ -22,6 +23,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/status
+      - virtualmachines/status
     verbs:
       - get
 ---
@@ -37,6 +39,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders
+      - virtualmachines
     verbs:
       - get
       - list
@@ -45,6 +48,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/status
+      - virtualmachines/status
     verbs:
       - get
 ---
@@ -74,7 +78,7 @@ metadata:
   namespace: default
 rules:
   - apiGroups:
-      - ''
+      - ""
     resources:
       - configmaps
     verbs:
@@ -98,7 +102,7 @@ rules:
       - patch
       - delete
   - apiGroups:
-      - ''
+      - ""
     resources:
       - events
     verbs:
@@ -143,7 +147,7 @@ metadata:
   name: cloudkit-operator-manager-role
 rules:
   - apiGroups:
-      - ''
+      - ""
     resources:
       - namespaces
       - serviceaccounts
@@ -173,12 +177,14 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/finalizers
+      - virtualmachines/finalizers
     verbs:
       - update
   - apiGroups:
       - cloudkit.openshift.io
     resources:
       - clusterorders/status
+      - virtualmachines/status
     verbs:
       - get
       - patch

@@ -30,14 +30,21 @@ spec:
       - name: service-tls
         secret:
           secretName: fulfillment-service-tls
+      - name: kube-root-ca
+        configMap:
+          name: kube-root-ca.crt
       containers:
       - name: controller
         image: fulfillment-service
         imagePullPolicy: IfNotPresent
         volumeMounts:
-        - name: service-tls
-          mountPath: /etc/fulfillment-service/tls
-        command:
+        - name: kube-root-ca
+          mountPath: /usr/local/share/ca-certificates/
+          subPath: ca.crt
+        env:
+        - name: KUBERNETES_CLIENT_INSECURE_SKIP_TLS_VERIFY
+          value: "true"
+        command: 
         - /usr/local/bin/fulfillment-service
         - start
         - controller
@@ -47,4 +54,5 @@ spec:
         - --grpc-server-network=tcp
         - --grpc-server-address=fulfillment-api:8000
         - --grpc-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-        - --grpc-ca-file=/etc/fulfillment-service/tls/ca.crt
+        - --grpc-ca-file=/usr/local/share/ca-certificates/ca.crt
+
