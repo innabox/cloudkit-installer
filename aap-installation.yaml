@@ -1,4 +1,10 @@
 # These objects are only needed if you don't have AAP installed.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ansible-aap
+  labels:
+    openshift.io/cluster-monitoring: "true"
 ---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
@@ -9,7 +15,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     environment: development
   name: dev-ansible-automation-platform-operator
-  namespace: foobar
+  namespace: ansible-aap
 spec: {}
 ---
 apiVersion: operators.coreos.com/v1alpha1
@@ -21,31 +27,31 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     environment: development
   name: dev-ansible-automation-platform
-  namespace: foobar
+  namespace: ansible-aap
 spec:
   channel: stable-2.5-cluster-scoped
   installPlanApproval: Automatic
   name: ansible-automation-platform-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
----
-apiVersion: aap.ansible.com/v1alpha1
-kind: AnsibleAutomationPlatform
-metadata:
-  annotations:
-    environment: development
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    environment: development
-  name: dev-cloudkit
-  namespace: foobar
-spec:
-  controller:
-    disabled: false
-  eda:
-    disabled: false
-  hub:
-    disabled: true
-  image_pull_policy: IfNotPresent
-  lightspeed:
-    disabled: true
+# ---
+# apiVersion: aap.ansible.com/v1alpha1
+# kind: AnsibleAutomationPlatform
+# metadata:
+#   annotations:
+#     environment: development
+#   labels:
+#     app.kubernetes.io/managed-by: kustomize
+#     environment: development
+#   name: dev-cloudkit
+#   namespace: foobar
+# spec:
+#   controller:
+#     disabled: false
+#   eda:
+#     disabled: false
+#   hub:
+#     disabled: true
+#   image_pull_policy: IfNotPresent
+#   lightspeed:
+#     disabled: true

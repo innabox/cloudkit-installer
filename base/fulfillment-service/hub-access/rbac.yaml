@@ -21,6 +21,24 @@ rules:
       - clusterorders/status
     verbs:
       - get
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - virtualmachines
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cloudkit.openshift.io
+    resources:
+      - virtualmachines/status
+    verbs:
+      - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
