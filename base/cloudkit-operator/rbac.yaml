@@ -159,6 +159,8 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders
+      - virtualmachines
+      - hostpools
     verbs:
       - create
       - delete
