@@ -24,7 +24,7 @@ spec:
   sourceNamespace: openshift-marketplace
   name: kubevirt-hyperconverged
   startingCSV: kubevirt-hyperconverged-operator.v4.19.1
-  channel: "stable" 
+  channel: "stable"
 ---
 apiVersion: hco.kubevirt.io/v1beta1
 kind: HyperConverged
