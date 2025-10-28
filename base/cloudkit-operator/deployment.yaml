@@ -32,9 +32,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
-              value: http://innabox-aap-eda-api/create-hosted-cluster
+              value: http://innabox-eda-service:5000/create-hosted-cluster
             - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
-              value: http://innabox-aap-eda-api/delete-hosted-cluster
+              value: http://innabox-eda-service:5000/delete-hosted-cluster
             - name: CLOUDKIT_FULFILLMENT_SERVER_ADDRESS
               value: fulfillment-api:8000
             - name: CLOUDKIT_FULFILLMENT_TOKEN_FILE
