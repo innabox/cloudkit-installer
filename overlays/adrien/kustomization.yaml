@@ -1,0 +1,107 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: vmaas-dev
+
+# This applies a name prefix to cluster-scoped resources (ClusterRoles,
+# ClusterRoleBindings) but does not modify namespaced resources.
+transformers:
+  - prefixTransformer.yaml
+
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/managed-by: kustomize
+      environment: development
+
+resources:
+  - ../../base
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  # This expects to find quay credentials in
+  # files/quay-pull-secret.json.
+  - name: quay-pull-secret
+    files:
+      - .dockerconfigjson=files/quay-pull-secret.json
+    type: kubernetes.io/dockerconfigjson
+
+  # This expects to find an AAP license manifest
+  # in files/license.zip.
+  - name: config-as-code-manifest-ig
+    files:
+      - license.zip=files/license.zip
+    options:
+      labels:
+        cloudkit.openshift.io/project: cloudkit-aap
+
+  - name: config-as-code-ig
+    options:
+      labels:
+        cloudkit.openshift.io/project: cloudkit-aap
+    literals:
+      - AAP_PROJECT_GIT_URI=https://github.com/jkary/cloudkit-aap
+      # - AAP_PROJECT_GIT_BRANCH=main
+      - AAP_PROJECT_GIT_BRANCH=feature/nfs-storage-for-vm-migration
+      - AAP_EE_IMAGE=quay.io/rh-ee-jkary/cloudkit-aap:latest
+
+  - name: cluster-fulfillment-ig
+    options:
+      labels:
+        cloudkit.openshift.io/project: cloudkit-aap
+    literals: []
+
+images:
+  - name: cloudkit-aap
+    newName: quay.io/rh-ee-jkary/cloudkit-aap
+    newTag: latest
+  - name: ghcr.io/innabox/cloudkit-aap
+    newName: quay.io/rh-ee-jkary/cloudkit-aap
+    newTag: latest
+  - name: ghcr.io/innabox/fulfillment-service
+    newName: quay.io/rh-ee-jkary/fulfillment-service
+    newTag: latest
+  - name: ghcr.io/innabox/cloudkit-operator
+    newName: quay.io/rh-ee-jkary/cloudkit-operator
+    newTag: latest
+
+patches:
+  # - patch: |
+  #     # Comment this out for the first run.
+  #     apiVersion: apiextensions.k8s.io/v1
+  #     kind: CustomResourceDefinition
+  #     metadata:
+  #       name: clusterorders.cloudkit.openshift.io
+  #     $patch: delete
+  - patch: |
+      apiVersion: apps/v1
+      metadata:
+        name: cloudkit-operator-controller-manager
+      kind: Deployment
+      name: manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                env:
+                - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
+                  value: http://innabox-foobar-eda-service:5000/create-hosted-cluster
+                - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
+                  value: http://innabox-foobar-eda-service:5000/delete-hosted-cluster
+                - name: CLOUDKIT_MINIMUM_REQUEST_INTERVAL
+                  value: "15m"
+  # - patch: |
+  #     apiVersion: external-secrets.io/v1beta1
+  #     kind: ExternalSecret
+  #     metadata:
+  #       name: cluster-fulfillment-ig
+  #     $patch: delete
+  # - patch: |
+  #     apiVersion: external-secrets.io/v1beta1
+  #     kind: ExternalSecret
+  #     metadata:
+  #       name: config-as-code-manifest-ig
+  #     $patch: delete

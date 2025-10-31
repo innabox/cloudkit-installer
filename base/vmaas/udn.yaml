@@ -1,0 +1,38 @@
+# # Create namespace with UDN label
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: vm-tenant-l2
+#   labels:
+#     k8s.ovn.org/primary-user-defined-network: ""
+#     name: vm-tenant-l2
+# ---
+# Create UserDefinedNetwork (Layer2)
+apiVersion: k8s.ovn.org/v1
+kind: UserDefinedNetwork
+metadata:
+  name: tenant-network
+  namespace: vm-tenant-l2
+spec:
+  topology: Layer2
+  layer2:
+    role: Primary
+    ipam:
+      lifecycle: Persistent
+    subnets:
+    - 10.200.0.0/16
+---
+# Create secondary UserDefinedNetwork (Layer2)
+apiVersion: k8s.ovn.org/v1
+kind: UserDefinedNetwork
+metadata:
+  name: secondary-network
+  namespace: vm-tenant-l2
+spec:
+  topology: Layer2
+  layer2:
+    role: Secondary
+    ipam:
+      lifecycle: Persistent
+    subnets:
+    - 10.100.0.0/16
