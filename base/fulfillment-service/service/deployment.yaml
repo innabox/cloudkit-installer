@@ -65,7 +65,7 @@ spec:
 
       - name: server
         image: fulfillment-service
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         volumeMounts:
         - name: sockets
           mountPath: /run/sockets
@@ -106,7 +106,7 @@ spec:
 
       - name: gateway
         image: fulfillment-service
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         volumeMounts:
         - name: sockets
           mountPath: /run/sockets
