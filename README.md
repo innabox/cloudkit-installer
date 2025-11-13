@@ -1,222 +1,161 @@
-# CloudKit Installer
+# OSAC Installer
 
-This repository contains Kubernetes/OpenShift deployment configurations for the CloudKit platform, providing comprehensive cluster lifecycle management through multiple integrated components.
+This repository contains Kubernetes/OpenShift deployment configurations for the OSAC
+platform, providing a fulfillment service framework for clusters and virtual machines.
 
 ## Overview
 
-CloudKit is a comprehensive platform that provides:
+There is a general need for OpenShift Advanced Cluster Management and OpenShift
+Virtualization to provide an easier/self-service mechanism to provision clusters and
+virtual machines in a controlled manner defined by the admin/service provider.
 
-- **Cluster Lifecycle Management** - Automated cluster provisioning, scaling, and decommissioning
-- **Event Driven Automation** - Responds to cluster events and webhook notifications
-- **Service Management** - Fulfillment services for cluster operations
-- **Configuration as Code** - Manages cluster configurations through Ansible playbooks and Kubernetes manifests
+Self-service means providing an end user the ability to request a cluster/VM using a
+fulfillment service which manages these requests and maintains security and privacy
+through multi-tenancy.  The technical details of executing these requests are handled by
+the definition of templates by the admin/service provider, giving the end user the ease
+of submitting a request for one of these curated clusters/VMs simply by selecting the
+template ID.
 
-## Architecture
+This fulfillment service integrates with an organization's IDM (Identity Management
+Provider) for authentication and mapping them to a tenant.  Users within a tenant are
+assigned different permissions and belong to one or more tenants.  Permissions are
+grant through the use of roles typically defining either an admin or user's access to
+resources and resource verbs. Individuals/machines can belong to one or more organizations if
+needed.
 
-The CloudKit platform consists of three main components:
+A typical user workflow has them creating a fulfillment request through the fulfillment
+API which takes this request and passes it on to a hub cluster.  Hubs contain the OSAC
+operator which is responsible for managing the life cycle of a resource and
+communicating with an automated back end to fulfill the requests.
 
-1. **CloudKit AAP (Ansible Automation Platform)** - Automated cluster provisioning and lifecycle management
-2. **CloudKit Operator** - Kubernetes operator for cluster order management and HyperShift integration
-3. **Fulfillment Service** - Backend service for cluster fulfillment operations with PostgreSQL database
+Administrators/service providers setup the 'hub' and configure/create the definitions of
+available templates. Templates contain the automation to execute life cycle events when
+requested by the OSAC operator.  A template and its automation is published as an
+Ansible role.  OSAC uses the Red Hat Ansible Automation Platform (AAP) to manage and
+execute these scripts when requested by the OSAC operator. Templates registered with AAP
+are automatically published back to the fulfillment service linking the ability to list
+and apply available templates associated to a tenant.
 
-## Component Repositories
+This architecture allows an organization to empower the end user to provision and
+de-provision infrastructure on their own in a secure and automated manner.  Multiple
+hubs can be registered to a fulfillment service enabling the ability to scale up.
 
-The CloudKit platform is built from the following source repositories:
+The fulfillment service is API based (gRPC/REST) allowing admins/service providers to
+integrate its functionality into their own UI or CLI functions.  A sample CLI interface
+is found in the [fulfillment-cli](https://innabox/fulfillment-cli) repository. Use of
+this CLI will feel familiar to OpenShift users in its style and use being it
+works similarly to the conventions of the oc/kubectl command.
 
-- **[cloudkit-operator](https://github.com/innabox/cloudkit-operator)** - Kubernetes operator for managing cluster orders and HyperShift integration
-- **[cloudkit-aap](https://github.com/innabox/cloudkit-aap)** - Ansible Automation Platform playbooks and collections for cluster provisioning
-- **[fulfillment-service](https://github.com/innabox/fulfillment-service)** - Backend gRPC service with PostgreSQL database for cluster fulfillment operations
+The API interface for the fulfillment service can be found at
+[fulfillment-api](https://innabox/fulfillment-api).
 
-## Prerequisites
+## OSAC Components
 
-Before deploying CloudKit, ensure you have:
+OSAC is a comprehensive platform leveraging:
 
-### Core Requirements
-- OpenShift cluster with admin access (version 4.17+ recommended)
-- `oc` CLI configured with cluster admin privileges
-- `kustomize` CLI tool (optional, can use `oc apply -k`)
+1. **Fulfillment Service** - API/Front end used to manage requests for resources using
+   templates.
+2. **OSAC Operator** - OpenShift operator running in an ACM/OCP-Virt cluster managing
+   the lifecycle of clusters/vms.
+3. **OSAC AAP (Ansible Automation Platform)** - Back end system for storing and
+   executing custom template logic.
 
-### Certificate Management
-- **cert-manager** operator installed and configured
-- Certificate issuers configured for TLS certificate management
-- Required for secure communication between components
+>** NOTE ** Red Hat OpenShift Advanced Cluster Management (RHACM), Red Hat OpenShift
+>Virtualization (OCP-Virt), and Red Hat Ansible Automation Platform must be installed
 
-### HyperShift Integration
-- **MultiCluster Engine (MCE)** installed with HyperShift support
-- HyperShift operator deployed and configured
-- Required for hosted cluster management capabilities
 
-### Component-Specific Prerequisites
+Additional manifests found in /prerequisites can be applied if the
+target hub cluster does not have them.  If you are using a shared cluster or you are not
+the admin of the cluster then you should sync with the appropriate people before
+applying any of these manifests as they have cluster wide effects.
 
-#### CloudKit AAP
-- **Red Hat Ansible Automation Platform Operator** installed
-- **Red Hat Advanced Cluster Management (ACM)** installed (for cluster provisioning)
-- **Valid AAP license manifest** - Download from [Red Hat Customer Portal](https://access.redhat.com/downloads/content/480/ver=2.4/rhel---9/2.4/x86_64/product-software) as `License.zip`
-- Container registry credentials for execution environments
+### 📋 Prerequisites Summary
 
-#### CloudKit Operator
-- **HyperShift CRDs** (`HostedCluster`, `NodePool`) available
-- **ClusterOrder CRDs** deployed
-- Proper RBAC permissions for cluster-wide operations
+| **Category** | **Requirement** | **Notes / Details** |
+|---------------|-----------------|----------------------|
+| **Platform** | Red Hat OpenShift Container Platform (OCP) 4.17 or later | Must have cluster admin access to the hub cluster. |
+| **Operators** | Red Hat Advanced Cluster Management (RHACM) 2.18+<br>Red Hat OpenShift Virtualization (OCP-Virt) 4.17+<br>Red Hat Ansible Automation Platform (AAP) 2.5+ | These must be installed and running prior to OSAC installation. |
+| **CLI Tools** | `oc` (OpenShift CLI) v4.17+<br>`kubectl` (optional)<br>`kustomize` v5.x<br>`git` | Ensure all CLIs are available in your `$PATH`. |
+| **Container Registry Access** | `registry.redhat.io` and `quay.io` | Verify credentials and pull secrets are valid in the target cluster namespace. |
+| **Network / DNS** | Ingress route configured for OSAC services | Required for external access to fulfillment API and AAP UI. |
+| **Authentication / IDM** | Organization Identity Provider (e.g., Keycloak, LDAP, RH-SSO) | Used for tenant and user identity mapping. |
+| **Storage** | Dynamic storage class available (e.g., `ocs-storagecluster-cephfs`, `lvms-storage`) | Required for persistence of operator and AAP components. |
+| **Permissions** | Cluster-admin access to deploy operators and create CRDs | Limited access users can only deploy into namespaces configured by the admin. |
+| **License Files** | `license.zip` (AAP subscription) | Must be placed under `overlays/<your-overlay>/files/license.zip`. |
+| **Internet Access** | Outbound access to GitHub (for fetching submodules, releases) | Required during installation and updates. |
 
-#### Fulfillment Service
-- **PostgreSQL** for database storage
-- **TLS certificates** for secure database connections
-- **Private registry access** for container images
 
-## Creating Your Personal Overlay (Recommended)
+## Installation Strategy
 
-**Best Practice:** Create your own overlay directory instead of using the provided overlays directly. This allows you to deploy a development instance that won't conflict with other developers.
+OSAC uses Kustomize for installation. This approach allows you to easily override and
+customize your deployment to meet specific needs.
 
-```bash
-# Create your own overlay directory using the development template
-cp -r overlays/development overlays/user1
+To manage dependencies, the OSAC-installer repository uses Git submodules to import the
+required manifests from each component. This method pins specific component versions to
+the main installer, ensuring version compatibility.
 
-# Edit the namespace in your overlay to avoid conflicts with others
-# Choose a unique namespace name for your deployment
-sed -i 's/namespace: innabox-devel/namespace: foobar/' overlays/user1/kustomization.yaml
+### Customizing Your Installation
+To apply your custom configuration, you'll create a new Kustomize overlay based on the
+provided development example.
+
+1. Copy the Base Overlay
+  Start by copying the development overlay directory to create your
+own:
+  ```
+  cp -r overlays/development overlays/<your-overlay-name>
+
+  # Place your environment-specific files here
+  # overlays/<your-overlay-name>/files/
+  ```
+
+2. Add Required Files
+  Place your environment-specific files into the new files/ subdirectory (overlays/<your-overlay-name>/files/).
+
+  Save the downloaded file as `overlays/<your overlay>/files/license.zip` (filename must
+  be exactly `license.zip`) The license.zip file is required for the AAP back
+  end to function correctly.
+
+3. Apply Custom Changes Modify the Kustomize manifests within your new overlay directory
+   (overlays/<your-overlay-name>/) to apply your desired configuration changes.
+
+For more information on how to structure your customizations, you can consult the
+official Kustomize documentation. The OSAC solution currently uses kustomizations and
+
+### Obtaining an AAP Licence
+
+Download AAP license manifest from [Red Hat Customer
+Portal](https://access.redhat.com/downloads/content/480/ver=2.4/rhel---9/2.4/x86_64/product-software)
+
+## Applying manifest files
+
+The development overlay should work out of the box.
+
+### Fig 1 - Install and monitor
+```
+> oc apply -k overlays/development
+> # Verify all the objects are applied.
+> watch oc get -n innabox pods
 ```
 
-Here's what your `overlays/user1/kustomization.yaml` file should look like:
+You will notice a number of pods coming and going while the individual components
+install.  At the top, a pod label 'aap-bootstrap' will have a number of attempts before
+it will complete.  This is normal and the job will keep restarting until it successfully
+finishes.  Once the aap-bootstrap shows as complete then the solution is ready for use.
 
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
+Alternatively the install will be ready with the command:
 
-namespace: foobar
-
-# This applies a name prefix to cluster-scoped resources (ClusterRoles,
-# ClusterRoleBindings) but does not modify namespaced resources.
-transformers:
-- prefixTransformer.yaml
-
-labels:
-- includeSelectors: true
-  pairs:
-    app.kubernetes.io/managed-by: kustomize
-    environment: development
-
-resources:
-- ../../base
-
-generatorOptions:
-  disableNameSuffixHash: true
-
-secretGenerator:
-
-# This expects to find quay credentials in
-# files/quay-pull-secret.json.
-- name: quay-pull-secret
-  files:
-  - .dockerconfigjson=files/quay-pull-secret.json
-  type: kubernetes.io/dockerconfigjson
-
-# This expects to find an AAP license manifest
-# in files/license.zip.
-- name: config-as-code-manifest-ig
-  options:
-    labels:
-      cloudkit.openshift.io/project: cloudkit-aap
-  files:
-  - license.zip=files/license.zip
-
-# Optional: Uncomment to use custom images
-# images:
-# - name: fulfillment-service
-#   newName: quay.io/your-username/fulfillment-service
-#   newTag: latest
-
-patches:
-  - patch: |
-      apiVersion: apiextensions.k8s.io/v1
-      kind: CustomResourceDefinition
-      metadata:
-        name: clusterorders.cloudkit.openshift.io
-      $patch: delete
-  - patch: |
-      apiVersion: apps/v1
-      metadata:
-        name: cloudkit-operator-controller-manager
-      kind: Deployment
-      name: manager
-      spec:
-        template:
-          spec:
-            containers:
-              - name: manager
-                env:
-                - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
-                  value: http://cloudkit-aap-eda-foobar/create-hosted-cluster
-                - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
-                  value: http://cloudkit-aap-eda-foobar/delete-hosted-cluster
+### Install wait command
+```
+> # Wait for deployments to be ready (replace 'user1' with your chosen namespace)
+> oc wait --for=condition=Available deployment --all -n user1 --timeout=600s
 ```
 
-Your personal overlay structure will look like:
-```
-overlays/user1/
-├── kustomization.yaml          # Main kustomization file
-├── prefixTransformer.yaml      # Adds prefix to cluster resources
-└── files/
-    ├── license.zip            # AAP license (you need to provide)
-    └── quay-pull-secret.json  # Registry credentials (you need to provide)
-```
-
-## Configuration Files Setup
-
-Before deploying, you need to set up configuration files in your overlay's `files/` directory:
-
-### 1. Container Registry Credentials
-
-Create `overlays/user1/files/quay-pull-secret.json`:
-
-```json
-{
-  "auths": {
-    "quay.io": {
-      "auth": "base64-encoded-username:password"
-    },
-    "registry.redhat.io": {
-      "auth": "base64-encoded-username:password"
-    }
-  }
-}
-```
-
-To generate the base64 auth string:
-```bash
-echo -n "username:password" | base64
-```
-
-### 2. AAP License File
-
-1. Download AAP license manifest from [Red Hat Customer Portal](https://access.redhat.com/downloads/content/480/ver=2.4/rhel---9/2.4/x86_64/product-software)
-2. Save the downloaded file as `overlays/user1/files/license.zip` (filename must be exactly `license.zip`)
-
-## Deployment
-
-Deploy all CloudKit components using kustomize:
-
-```bash
-# Deploy all components using your personal overlay
-oc apply -k overlays/user1
-
-# Wait for deployments to be ready (replace 'foobar' with your chosen namespace)
-oc wait --for=condition=Available deployment --all -n foobar --timeout=600s
-
-# Check deployment status
-oc get pods -n foobar
-```
-
-## Fulfillment Service Interface
-
-The CloudKit platform provides APIs through two main interfaces:
-
-- **[fulfillment-cli](https://github.com/innabox/fulfillment-cli)** - Command-line interface for interacting with the fulfillment service
-- **[fulfillment-api](https://github.com/innabox/fulfillment-api)** - REST/gRPC API documentation and specifications
+In this new overlay, different images can be used and patches applied to suit your
+needs.
 
 ## Fulfillment CLI Workflow
 
-Follow this workflow to use the fulfillment-cli with your deployed CloudKit instance:
+Follow this workflow to use the fulfillment-cli with your deployed OSAC instance:
 
 ### 1. Obtain the fulfillment-cli Binary
 
@@ -230,6 +169,8 @@ chmod +x fulfillment-cli
 
 ### 2. Deploy Using Kustomize
 
+See the section above for how to create customized overlays.
+
 ```bash
 oc apply -k overlays/user1
 ```
@@ -238,12 +179,12 @@ oc apply -k overlays/user1
 
 ```bash
 ./fulfillment-cli login \
-  --address fulfillment-api-foobar.apps.your-cluster.com \
-  --token-script "oc create token fulfillment-controller -n foobar --duration 1h --as system:admin" \
+  --address fulfillment-api-user1.apps.your-cluster.com \
+  --token-script "oc create token fulfillment-controller -n user1 --duration 1h --as system:admin" \
   --insecure
 ```
 
-*Note: Replace the address with your actual route URL. You can find it with `oc get routes -n foobar`*
+*Note: Replace the address with your actual route URL. You can find it with `oc get routes -n user1`*
 
 ### 4. Create a kubeconfig.hub-access
 
@@ -261,16 +202,17 @@ Follow the instructions in `base/fulfillment-service/hub-access/README.md` to ge
 ./fulfillment-cli create hub \
   --kubeconfig=kubeconfig.hub-access \
   --id hub1 \
-  --namespace foobar
+  --namespace user1
 ```
 
-### 6. Create a Cluster
+## Creating a Cluster
 
+### Cluster creation requests
 ```bash
-./fulfillment-cli create cluster --template ocp_4_17_small
+./fulfillment-cli create cluster --template cloudkit.templates.ocp_4_17_small
 ```
 
-### 7. Check Cluster Status
+### Check Cluster Status
 
 ```bash
 ./fulfillment-cli get cluster
@@ -293,29 +235,61 @@ Follow the instructions in `base/fulfillment-service/hub-access/README.md` to ge
   ./fulfillment-cli delete cluster <cluster-id>
   ```
 
+## Creating Virtual Machines
+
+```bash
+./fulfillment-cli create virtualmachine \
+    --template cloudkit.templates.ocp_virt_vm \
+    -p name='VM1' \
+    -p public_ssh_keys=`cat $HOME/.ssh/id_rsa.pub`
+```
+
+### Check VM Status
+
+```bash
+./fulfillment-cli get virtualmachines
+```
+
+### Additional Useful Commands
+
+- **Get available VM templates:**
+  ```bash
+  ./fulfillment-cli get virtualmachinetemplates
+  ```
+
+- **Get detailed VM information:**
+  ```bash
+  ./fulfillment-cli get virtualmachine VM1 -o yaml
+  ```
+
+- **Delete a VM:**
+  ```bash
+  ./fulfillment-cli delete VM <vm-id>
+  ```
+
 ## Accessing Ansible Automation Platform
 
 After deployment, you can access the AAP web interface to monitor jobs and manage automation:
 
 ### Getting AAP URL and Admin Password
 
-1. **Get the AAP URL:**
+### **Get the AAP URL:**
    ```bash
-   oc get route -n foobar | grep innabox-aap
+   oc get route -n user1 | grep innabox-aap
    # Look for routes containing 'innabox-aap' in the name
-   # The main AAP URL will be something like: https://innabox-aap-foobar.apps.your-cluster.com
+   # The main AAP URL will be something like: https://innabox-aap-user1.apps.your-cluster.com
    ```
 
-2. **Get the admin password:**
+### **Get the admin password:**
    ```bash
    # Find the AAP admin password secret
-   oc get secrets -n foobar | grep admin-password
-   
+   oc get secrets -n user1 | grep admin-password
+
    # Extract the password (typically named innabox-aap-admin-password)
-   oc get secret innabox-aap-admin-password -n foobar -o jsonpath='{.data.password}' | base64 -d
+   oc get secret innabox-aap-admin-password -n user1 -o jsonpath='{.data.password}' | base64 -d
    ```
 
-3. **Login to AAP:**
+### **Login to AAP:**
    - Open the AAP controller URL in your browser
    - Username: `admin`
    - Password: (from step 2)
@@ -329,84 +303,41 @@ From the AAP web interface, you can:
 - Configure additional automation tasks
 - View inventory and host information
 
-## Repository Structure
-
-```
-cloudkit-installer/
-├── base/                           # Base Kustomize configurations
-│   ├── shared/                     # Shared namespace and common resources
-│   ├── cloudkit-aap/              # Ansible Automation Platform base config
-│   ├── cloudkit-operator/         # CloudKit Operator base config
-│   └── fulfillment-service/       # Fulfillment Service base config
-│       ├── ca/                    # Certificate Authority setup
-│       ├── database/              # PostgreSQL database
-│       ├── service/               # Main service deployment with Envoy proxy
-│       ├── controller/            # Controller component
-│       ├── admin/                 # Admin service account
-│       ├── client/                # Client service account
-│       └── hub-access/            # Hub access service account and README
-├── overlays/                      # Environment-specific overlays
-│   ├── development/               # Development environment template
-│   └── user1/                     # Your personal overlay (create this)
-└── components/                    # Git submodules for actual source code
-    ├── cloudkit-aap/             # Ansible playbooks and collections
-    ├── cloudkit-operator/        # Go-based operator source
-    └── fulfillment-service/      # Go-based service with gRPC API
-```
-
 ## Troubleshooting
 
 ### Common Issues
 
 1. **cert-manager not ready**: Ensure cert-manager operator is installed and running
-2. **HyperShift CRDs missing**: Verify MultiCluster Engine is deployed with HyperShift enabled
-3. **Certificate issues**: Check cert-manager logs and certificate status
-4. **Database connection failures**: Verify database certificates and connectivity
-5. **cloudkit-operator CrashLoopBackOff**: Usually indicates missing HyperShift permissions or CRDs not available
-6. **ImagePullBackOff errors**: Verify registry credentials in `files/quay-pull-secret.json`
-7. **namePrefix conflicts**: Certificate and secret names may not match due to kustomize namePrefix application
+2. **Certificate issues**: Check cert-manager logs and certificate status
+3. **ImagePullBackOff errors**: Verify registry credentials in `files/quay-pull-secret.json` and image string
 
 ### Debug Commands
 
 ```bash
 # Check certificate status
-oc describe certificate -n foobar
+oc describe certificate -n user1
 
 # Check certificate issuer status
-oc describe issuer -n foobar
+oc describe issuer -n user1
 
 # Check pod events
-oc describe pod -n foobar <pod-name>
+oc describe pod -n user1 <pod-name>
 
 # Check service endpoints
-oc get endpoints -n foobar
+oc get endpoints -n user1
 
 # Check secrets
-oc get secrets -n foobar
+oc get secrets -n user1
 
 # View component logs
-oc logs -n foobar deployment/fulfillment-service -c server --tail=100
-oc logs -n foobar deployment/cloudkit-operator-controller-manager --tail=100
+oc logs -n user1 deployment/fulfillment-service -c server --tail=100
+oc logs -n user1 deployment/OSAC-operator-controller-manager --tail=100
 
 # Get all events in namespace
-oc get events -n foobar --sort-by=.metadata.creationTimestamp
+oc get events -n user1 --sort-by=.metadata.creationTimestamp
 ```
 
-## Development
 
-For development work on the individual components:
-
-1. Fork/clone the component repositories (cloudkit-operator, cloudkit-aap, fulfillment-service)
-2. Make your changes in the component repository
-3. Build and push images to your registry
-4. Update your overlay's `kustomization.yaml` to reference your custom images:
-   ```yaml
-   images:
-   - name: fulfillment-service
-     newName: quay.io/your-username/fulfillment-service
-     newTag: your-tag
-   ```
-5. Deploy using `oc apply -k overlays/your-overlay`
 
 ## Support
 
@@ -418,4 +349,4 @@ For issues and questions:
 
 ## License
 
-This project is licensed under the Apache License, Version 2.0.
+This project is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
