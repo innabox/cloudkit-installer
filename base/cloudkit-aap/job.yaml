@@ -86,4 +86,4 @@ spec:
         secret:
           secretName: config-as-code-manifest-ig
       restartPolicy: Never
-  backoffLimit: 20
+  backoffLimit: 15
