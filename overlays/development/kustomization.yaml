@@ -37,27 +37,3 @@ secretGenerator:
       cloudkit.openshift.io/project: cloudkit-aap
   files:
   - license.zip=files/license.zip
-
-patches:
-  - patch: |
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: fulfillment-service
-      spec:
-        template:
-          spec:
-            containers:
-            - name: server
-              command:
-              - /usr/local/bin/fulfillment-service
-              - start
-              - server
-              - --log-level=debug
-              - --log-headers=true
-              - --log-bodies=true
-              - --db-url=postgres://client:$(PGPASSWORD)@fulfillment-database:5432/service?sslmode=verify-full&sslcert=/secrets/cert/tls.crt&sslkey=/secrets/cert/tls.key&sslrootcert=/secrets/cert/ca.crt
-              - --grpc-listener-network=unix
-              - --grpc-listener-address=/run/sockets/server.socket
-              - --grpc-authn-type=guest
-              - --tenancy-logic=empty

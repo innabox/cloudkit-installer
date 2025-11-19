@@ -10,6 +10,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders
+      - hostpools
       - virtualmachines
     verbs:
       - create
@@ -23,6 +24,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/status
+      - hostpools/status
       - virtualmachines/status
     verbs:
       - get
@@ -39,6 +41,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders
+      - hostpools
       - virtualmachines
     verbs:
       - get
@@ -48,6 +51,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/status
+      - hostpools/status
       - virtualmachines/status
     verbs:
       - get
@@ -163,8 +167,8 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders
-      - virtualmachines
       - hostpools
+      - virtualmachines
     verbs:
       - create
       - delete
@@ -177,6 +181,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/finalizers
+      - hostpools/finalizers
       - virtualmachines/finalizers
     verbs:
       - update
@@ -184,6 +189,7 @@ rules:
       - cloudkit.openshift.io
     resources:
       - clusterorders/status
+      - hostpools/status
       - virtualmachines/status
     verbs:
       - get
