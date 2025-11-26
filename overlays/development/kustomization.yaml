@@ -59,5 +59,5 @@ patches:
               - --db-url=postgres://client:$(PGPASSWORD)@fulfillment-database:5432/service?sslmode=verify-full&sslcert=/secrets/cert/tls.crt&sslkey=/secrets/cert/tls.key&sslrootcert=/secrets/cert/ca.crt
               - --grpc-listener-network=unix
               - --grpc-listener-address=/run/sockets/server.socket
-              - --grpc-authn-type=guest
+              - --grpc-authn-type=external
               - --tenancy-logic=empty

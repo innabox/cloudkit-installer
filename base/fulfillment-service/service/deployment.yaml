@@ -97,7 +97,7 @@ spec:
           sslrootcert=/secrets/cert/ca.crt"
         - --grpc-listener-network=unix
         - --grpc-listener-address=/run/sockets/server.socket
-        - --grpc-authn-type=guest
+        - --grpc-authn-type=external
 
       - name: gateway
         image: fulfillment-service
