@@ -46,9 +46,9 @@ spec:
             - name: CLOUDKIT_MINIMUM_REQUEST_INTERVAL
               value: "2m"
             - name: CLOUDKIT_VM_CREATE_WEBHOOK
-              value: http://innabox-foobar-eda-service:5000/create-vm
+              value: http://innabox-eda-service:5000/create-vm
             - name: CLOUDKIT_VM_DELETE_WEBHOOK
-              value: http://innabox-foobar-eda-service:5000/delete-vm
+              value: http://innabox-eda-service:5000/delete-vm
           image: cloudkit-operator
           imagePullPolicy: Always
           livenessProbe:
