@@ -61,9 +61,11 @@ spec:
               key: POSTGRES_PASSWORD
         - name: POSTGRESQL_DATABASE
           value: service
+        - name: PGDATA
+          value: /var/lib/pgsql/data/userdata
         volumeMounts:
         - name: data
-          mountPath: /var/lib/postgresql
+          mountPath: /var/lib/pgsql
         - name: server-cert
           mountPath: /secrets/cert
         - name: server-config
