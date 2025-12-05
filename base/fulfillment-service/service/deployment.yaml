@@ -65,7 +65,7 @@ spec:
 
       - name: server
         image: fulfillment-service
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: sockets
           mountPath: /run/sockets
@@ -98,10 +98,11 @@ spec:
         - --grpc-listener-network=unix
         - --grpc-listener-address=/run/sockets/server.socket
         - --grpc-authn-type=guest
+        - --tenancy-logic=guest
 
       - name: gateway
         image: fulfillment-service
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: sockets
           mountPath: /run/sockets
