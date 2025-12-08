@@ -41,9 +41,6 @@ spec:
         - name: ca-cert
           mountPath: /usr/local/share/ca-certificates/ca.crt
           subPath: ca.crt
-        env:
-        - name: KUBERNETES_CLIENT_INSECURE_SKIP_TLS_VERIFY
-          value: "true"
         command:
         - /usr/local/bin/fulfillment-service
         - start

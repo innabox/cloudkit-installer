@@ -1,9 +1,3 @@
-[submodule "components/cloudkit-operator"]
-	path = components/cloudkit-operator
-	url = https://github.com/innabox/cloudkit-operator.git
-[submodule "components/fulfillment-service"]
-	path = components/fulfillment-service
-	url = https://github.com/innabox/fulfillment-service.git
-[submodule "components/cloudkit-aap"]
-	path = components/cloudkit-aap
-	url = https://github.com/innabox/cloudkit-aap.git
+[submodule "bases/osac-operator"]
+	path = bases/osac-operator
+	url = https://github.com/innabox/cloudkit-operator
