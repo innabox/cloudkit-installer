@@ -5,11 +5,10 @@ metadata:
   name: cloudkit-base
 
 resources:
-  - shared
   - cloudkit-aap
-  - ./osac-operator/config/default
-  - fulfillment-service
-  # - vmaas
+  - osac-operator/config/default
+  - osac-fulfillment-service/manifests/overlays/openshift
+  - hub-access
 
 # Common labels for all CloudKit components
 labels:
