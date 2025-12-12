@@ -122,6 +122,10 @@ spec:
                   - type
                   type: object
                 type: array
+              desiredConfigVersion:
+                description: DesiredConfigVersion is the version (hash) of the desired
+                  configuration of the VirtualMachine
+                type: string
               phase:
                 description: Phase provides a single-value overview of the state of
                   the VirtualMachine
@@ -131,6 +135,29 @@ spec:
                 - Ready
                 - Deleting
                 type: string
+              reconciledConfigVersion:
+                description: ReconciledConfigVersion is the version (hash) of the
+                  reconciled configuration of the VirtualMachine
+                type: string
+              virtualMachineReference:
+                description: Reference to the namespace that contains VirtualMachine
+                  resources
+                properties:
+                  kubeVirtVirtalMachineName:
+                    type: string
+                  namespace:
+                    description: Namespace that contains the VirtualMachine resources
+                    type: string
+                  roleBindingName:
+                    type: string
+                  serviceAccountName:
+                    type: string
+                required:
+                - kubeVirtVirtalMachineName
+                - namespace
+                - roleBindingName
+                - serviceAccountName
+                type: object
             type: object
         required:
         - spec
