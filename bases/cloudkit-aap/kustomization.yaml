@@ -9,8 +9,8 @@ resources:
   - cloudkit-sa.yaml
   - job.yaml
   - template-publisher.yaml
-  # cluster-fulfillment-ig-externalsecret.yaml
-  # config-as-code-manifest-ig-externalsecret.yaml
+  - cluster-fulfillment-ig-externalsecret.yaml
+  - config-as-code-manifest-ig-externalsecret.yaml
 
 labels:
 - pairs:
