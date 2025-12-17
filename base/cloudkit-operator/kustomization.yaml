@@ -20,3 +20,4 @@ resources:
 - metrics-service.yaml
 - rbac.yaml
 - serviceaccount.yaml
+- cloudkit.openshift.io_hostpools.yaml

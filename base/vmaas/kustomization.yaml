@@ -5,7 +5,7 @@ metadata:
   name: vmaas
 
 resources:
-  - cloudkit.openshift.io_cloudkitvms.yaml
+  - cloudkit.openshift.io_virtualmachines.yaml
 
 labels:
 - pairs:

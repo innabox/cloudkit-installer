@@ -4,29 +4,29 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.1
-  name: virtualmachines.cloudkit.openshift.io
+  name: hostpools.cloudkit.openshift.io
 spec:
   group: cloudkit.openshift.io
   names:
-    kind: VirtualMachine
-    listKind: VirtualMachineList
-    plural: virtualmachines
+    kind: HostPool
+    listKind: HostPoolList
+    plural: hostpools
     shortNames:
-    - vm
-    singular: virtualmachine
+    - hp
+    singular: hostpool
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.templateID
-      name: Template
-      type: string
     - jsonPath: .status.phase
       name: Phase
       type: string
+    - jsonPath: .spec.hostSets[*].size
+      name: Host Sets
+      type: integer
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: VirtualMachine is the Schema for the virtualmachines API
+        description: HostPool is the Schema for the hostpools API
         properties:
           apiVersion:
             description: |-
@@ -46,27 +46,35 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of VirtualMachine
+            description: spec defines the desired state of HostPool
             properties:
-              templateID:
-                description: TemplateID is the unique identigier of the virtual machine
-                  template to use when creating this virtual machine
-                pattern: ^[a-zA-Z_][a-zA-Z0-9._]*$
-                type: string
-              templateParameters:
+              hostSets:
                 description: |-
-                  TemplateParameters is a JSON-encoded map of the parameter values for the
-                  selected virtual machine template.
-                type: string
+                  HostSets defines the types of hosts and number of each type of host that will be allocated
+                  for this host pool
+                items:
+                  properties:
+                    hostClass:
+                      description: HostClass describes the type of host you are requesting
+                      type: string
+                    size:
+                      description: Size describes the number of hosts you want of
+                        the given host class
+                      type: integer
+                  required:
+                  - hostClass
+                  - size
+                  type: object
+                type: array
             required:
-            - templateID
+            - hostSets
             type: object
           status:
-            description: status defines the observed state of VirtualMachine
+            description: status defines the observed state of HostPool
             properties:
               conditions:
                 description: Conditions holds an array of metav1.Condition that describe
-                  the state of the VirtualMachine
+                  the state of the HostPool
                 items:
                   description: Condition contains details for one aspect of the current
                     state of this API Resource.
@@ -122,9 +130,35 @@ spec:
                   - type
                   type: object
                 type: array
+              hostPoolReference:
+                description: Reference to the resources created for this HostPool
+                properties:
+                  namespace:
+                    description: Namespace that contains the HostPool resources
+                    type: string
+                required:
+                - namespace
+                type: object
+              hostSets:
+                description: HostSets reflects how many hosts are currently allocated
+                  for each host class
+                items:
+                  properties:
+                    hostClass:
+                      description: HostClass describes the type of host you are requesting
+                      type: string
+                    size:
+                      description: Size describes the number of hosts you want of
+                        the given host class
+                      type: integer
+                  required:
+                  - hostClass
+                  - size
+                  type: object
+                type: array
               phase:
                 description: Phase provides a single-value overview of the state of
-                  the VirtualMachine
+                  the HostPool
                 enum:
                 - Progressing
                 - Failed
