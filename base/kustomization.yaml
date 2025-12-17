@@ -8,7 +8,8 @@ metadata:
 resources:
   - cloudkit-aap
   - osac-operator/config/default
-  - fulfillment-service
+  - osac-fulfillment-service/manifests/overlays/openshift
+  - hub-access
 
 # Common labels for all CloudKit components
 labels:
@@ -38,6 +39,17 @@ images:
 - name: openshift-cli
   newName: image-registry.openshift-image-registry.svc:5000/openshift/cli
   newTag: latest
+
+patches:
+- target:
+    kind: Namespace
+    labelSelector: "control-plane=controller-manager"
+  patch: |-
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: not-used
+    $patch: delete
 
 configurations:
 - nameReference.yaml
