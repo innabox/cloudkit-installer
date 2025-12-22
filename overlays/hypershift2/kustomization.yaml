@@ -13,7 +13,7 @@ patches:
       kind: Deployment
       metadata:
         name: cloudkit-operator-controller-manager
-        namespace: innabox
+        namespace: cloudkit-operator-system
       spec:
         template:
           spec:
@@ -21,16 +21,24 @@ patches:
             - name: manager
               env:
               - name: CLOUDKIT_CLUSTER_CREATE_WEBHOOK
-                value: http://innabox-innabox-eda-service:5000/create-hosted-cluster
+                value: http://innabox-eda-service:5000/create-hosted-cluster
               - name: CLOUDKIT_CLUSTER_DELETE_WEBHOOK
-                value: http://innabox-innabox-eda-service:5000/delete-hosted-cluster
+                value: http://innabox-eda-service:5000/delete-hosted-cluster
+              - name: CLOUDKIT_VM_CREATE_WEBHOOK
+                value: http://innabox-eda-service:5000/create-vm
+              - name: CLOUDKIT_VM_DELETE_WEBHOOK
+                value: http://innabox-eda-service:5000/delete-vm
+              - name: CLOUDKIT_MINIMUM_REQUEST_INTERVAL
+                value: "2m"
+              - name: CLOUDKIT_FULFILLMENT_SERVER_ADDRESS
+                value: fulfillment-api:8000
 
 secretGenerator:
   - name: config-as-code-ig
     options:
       disableNameSuffixHash: true
     literals:
-      - AAP_EE_IMAGE=ghcr.io/larsks/cloudkit-aap@sha256:ddc3dec0315de244c14df9d2ee11cc242a60dabd0b0b43b2c48fd1a0de2e61da
+      - AAP_EE_IMAGE=ghcr.io/innabox/cloudkit-aap:latest
 
 configMapGenerator:
   - name: publish-templates-ig
@@ -41,8 +49,8 @@ configMapGenerator:
 
 images:
   - name: ghcr.io/innabox/cloudkit-operator
-    digest: sha256:675ede6dac9fcd9b8579a24f8798f80ab91954d787fbc4d6e55e8ea311d5d0a9
+    digest: sha256:9b271b405219e6be4c61259b8ebfcb3b41a7fa58ecccd6ada93c10d046f510a8
   - name: ghcr.io/innabox/fulfillment-service
-    digest: sha256:39129a4cd31524be72ae8938ab7352d8a16628b16a026789910e54dc89a60832
-  - name: ghcr.io/innabox/cloudkit-aap
-    digest: sha256:7a4866a3409782e74f2f5cd93c4c1ca8dfed2fa8d5a556141dd3c0de245cce70
+    newTag: v0.0.30
+  - name: ghcr.io/innabox/fulfillment-controller
+    newTag: v0.0.30
