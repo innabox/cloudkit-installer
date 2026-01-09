@@ -1,0 +1,112 @@
+#
+# Copyright (c) 2025 Red Hat Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-service
+  template:
+    metadata:
+      labels:
+        app: keycloak-service
+    spec:
+      volumes:
+      - name: realm
+        configMap:
+          name: keycloak-realm
+      - name: database-client-cert
+        secret:
+          secretName: keycloak-database-client-cert
+      - name: tls-cert
+        secret:
+          secretName: keycloak-tls-cert
+      initContainers:
+      - name: wait-for-database
+        image: postgres
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          until pg_isready --host keycloak-database --timeout 1; do
+            sleep 1
+          done
+      containers:
+      - name: keycloak
+        image: keycloak
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: realm
+          mountPath: /opt/keycloak/data/import
+          readOnly: true
+        - name: database-client-cert
+          mountPath: /secrets/database-client
+          readOnly: true
+        - name: tls-cert
+          mountPath: /secrets/tls
+          readOnly: true
+        env:
+        - name: KEYCLOAK_ADMIN
+          value: admin
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          value: admin
+        - name: KC_HOSTNAME_STRICT
+          value: "true"
+        - name: KC_HOSTNAME_STRICT_HTTPS
+          value: "true"
+        - name: KC_HTTP_ENABLED
+          value: "false"
+        - name: KC_HTTPS_ENABLED
+          value: "true"
+        - name: KC_HTTPS_PORT
+          value: "8001"
+        - name: KC_HTTPS_CERTIFICATE_FILE
+          value: "/secrets/tls/tls.crt"
+        - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+          value: "/secrets/tls/tls.key"
+        - name: KC_HOSTNAME
+          value: "keycloak.keycloak.svc.cluster.local"
+        - name: KC_DB
+          value: "postgres"
+        - name: KC_DB_URL
+          value: "jdbc:postgresql://keycloak-database:5432/keycloak?sslmode=require&sslcert=/secrets/database-client/tls.crt&sslkey=/secrets/database-client/key.der&sslrootcert=/secrets/database-client/ca.crt"
+        - name: KC_DB_USERNAME
+          value: keycloak
+        - name: KC_DB_PASSWORD
+          value: ""
+        args:
+        - start
+        - --import-realm
+        ports:
+        - name: https
+          containerPort: 8001
+        readinessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8001
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8001
+            scheme: HTTPS
+          initialDelaySeconds: 60
+          periodSeconds: 30
